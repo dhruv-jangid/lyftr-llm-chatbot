@@ -94,6 +94,14 @@ def build_router(simulated_failures: dict[str, int] | None = None) -> Router:
 router = build_router()
 
 
+def _safe_reason(exc: Exception) -> str:
+    """Short error text for the logs, with every API key masked out."""
+    text = str(exc).splitlines()[0][:300] if str(exc) else ""
+    for key in settings.api_keys:
+        text = text.replace(key, "***")
+    return text
+
+
 def parse_simulation_header(value: str | None) -> dict[str, int]:
     """'key_1=429,key_2=500' -> {'key_1': 429, 'key_2': 500}; '*=429' -> all keys."""
     if not value or not value.strip():
@@ -133,7 +141,7 @@ async def complete(messages: list[dict], simulated_failures: dict[str, int]) -> 
     try:
         response = await active_router.acompletion(**kwargs)
     except Exception as exc:  # every key failed (429 / quota / 5xx / auth ...)
-        logger.warning("all providers failed: %s", type(exc).__name__)
+        logger.warning("all providers failed: %s: %s", type(exc).__name__, _safe_reason(exc))
         raise AllProvidersFailed() from exc
 
     reply = (response.choices[0].message.content or "").strip()

@@ -10,8 +10,10 @@ React (Vite) ──HTTP/JSON──▶ FastAPI ──▶ LiteLLM Router ──▶
 
 ## 1. Live URLs
 
-- Frontend: `https://<your-app>.vercel.app`  <!-- TODO: replace after deploying -->
-- Backend: `https://<your-backend>.up.railway.app` (try `/health`)  <!-- TODO -->
+- Frontend: https://lyftr-llm-chatbot-ten.vercel.app
+- Backend: https://lyftr-llm-chatbot-production.up.railway.app (try [`/health`](https://lyftr-llm-chatbot-production.up.railway.app/health))
+
+The frontend is hosted on Vercel and the backend runs on Railway from `backend/Dockerfile`. A Railway volume is mounted at `/data`, so the SQLite file survives redeploys.
 
 ## 2. Run locally
 
@@ -53,7 +55,7 @@ npm run dev                 # http://localhost:5173 (VITE_API_URL defaults to ht
 | Variable | Meaning |
 |---|---|
 | `LLM_API_KEYS` | Comma-separated key pool (≥ 2). Ids are `key_1`, `key_2`, … in this order |
-| `LLM_MODEL` | LiteLLM model name, default `gemini/gemini-2.5-flash-lite` |
+| `LLM_MODEL` | LiteLLM model name, default `gemini/gemini-3.5-flash-lite` |
 | `DATABASE_URL` | SQLite location, e.g. `sqlite:////data/app.db` |
 | `ALLOWED_ORIGINS` | Comma-separated CORS origins |
 | `ENABLE_FAILURE_SIMULATION` | `true` enables the `X-Simulate-Failure` header |
@@ -89,7 +91,7 @@ npm run dev                 # http://localhost:5173 (VITE_API_URL defaults to ht
 ## 4. Verification
 
 ```bash
-B=http://localhost:8000     # or the live backend URL
+B=https://lyftr-llm-chatbot-production.up.railway.app   # or http://localhost:8000
 curl -s $B/health
 
 # Live inference, then a cache hit (same first message, new session)
@@ -128,4 +130,5 @@ curl -s -i $B/sessions/unknown/messages        # 404 {"detail":"session not foun
 - **Key and failover chip on each reply** (`key_2 · 1 failover`), which makes fallback visible at a glance.
 - **"New chat" button** that starts a fresh session without reloading.
 - **Per-session system prompt** (`system-prompt-input`). It is stored server-side and reused for later turns, but never exposed.
+- **Markdown rendering** of assistant replies (react-markdown), so lists and bold text from the model display cleanly.
 - **Tests against a fake HTTP LLM server** instead of mocking LiteLLM itself, so the real router and cache code paths are tested.

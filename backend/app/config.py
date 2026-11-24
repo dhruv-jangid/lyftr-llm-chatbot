@@ -20,7 +20,7 @@ class Settings:
     def __init__(self) -> None:
         # Key pool: "keyA,keyB" -> ids key_1, key_2 in the same order.
         self.api_keys: list[str] = _split_csv(os.getenv("LLM_API_KEYS", ""))
-        self.llm_model: str = os.getenv("LLM_MODEL", "gemini/gemini-2.5-flash-lite")
+        self.llm_model: str = os.getenv("LLM_MODEL", "gemini/gemini-3.5-flash-lite")
         # Optional custom base URL (used by the test suite's fake LLM server).
         self.llm_api_base: str | None = os.getenv("LLM_API_BASE") or None
         self.llm_timeout: float = float(os.getenv("LLM_TIMEOUT_SECONDS", "30"))

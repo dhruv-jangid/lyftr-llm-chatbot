@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import ReactMarkdown from 'react-markdown'
 import { API_URL, newSessionId, sendChat } from './api'
 
 const FAILURE_OPTIONS = [
@@ -60,7 +61,9 @@ function Message({ msg }) {
   return (
     <div className="row">
       <div className="bubble bubble-assistant" data-testid="assistant-message">
-        <div className="reply">{msg.content}</div>
+        <div className="reply">
+          <ReactMarkdown>{msg.content}</ReactMarkdown>
+        </div>
         <Metadata meta={msg.metadata} />
       </div>
     </div>
